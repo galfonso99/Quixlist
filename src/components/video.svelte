@@ -1,0 +1,85 @@
+<script lang="ts">
+	// import { vm-player, Video, vm-youtube, DefaultUi} from '@vime/svelte';
+	import { onMount } from 'svelte';
+	export let video_src;
+	export let domain;
+	// export let videoLoadFailed = false;
+	export let loadNextVideo: () => void = () => undefined;
+
+	let playerHasMounted = false;
+
+	let player;
+
+	// $: video_src, console.log(video_src);
+
+	const autoplay = async () => {
+		await new Promise((r) => setTimeout(r, 200));
+		player.play();
+		// player.enterPiP();
+		dispatchPlaybackStartedEvent();
+	};
+
+	const dispatchPlaybackStartedEvent = () => {
+		const event = new CustomEvent('playbackStarted', {
+			detail: {},
+			bubbles: true,
+			cancelable: true,
+			composed: false
+		});
+		window.dispatchEvent(event);
+	};
+
+	const skipAhead = () => {
+		player.currentTime += 10;
+	};
+
+	// const checkIfLoaded = async () => {
+	// 	await new Promise((r) => setTimeout(r, 5000));
+	// 	// If playback has not started then video load PROBABLY failed
+	// 	videoLoadFailed = !player.playbackStarted
+	// }
+
+	onMount(async function () {
+		const { defineCustomElements } = await import('@vime/core');
+		defineCustomElements();
+		playerHasMounted = true;
+	});
+</script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@vime/core@^5/themes/default.css" />
+
+{#if playerHasMounted && domain}
+	{#key video_src}
+			<vm-player
+				autoplay
+				controls={domain === 'youtube'}
+				volume="100"
+				theme="dark"
+				bind:this={player}
+				on:vmPlaybackEnded={loadNextVideo}
+				on:vmPlaybackReady={autoplay}
+			>
+				<!-- on:vmLoadStart={checkIfLoaded} -->
+				{#if domain === 'youtube'}
+					<vm-youtube video-id={video_src} />
+				{:else if domain === 'vimeo'}
+					<vm-vimeo video-id={video_src} />
+				{:else}
+					<vm-video>
+						<source src={video_src} type="video/mp4" />
+					</vm-video>
+				{/if}
+			</vm-player>
+	{/key}
+{/if}
+
+<style>
+	vm-player {
+		--vm-slider-value-color: rgb(250, 88, 1);
+		--vm-player-theme: #a4a0a064;
+		--vm-slider-track-height: 7px;
+		--vm-slider-track-focused-height: 9px;
+		--vm-slider-thumb-width: 17px;
+		--vm-slider-thumb-height: 17px;
+	}
+</style>
