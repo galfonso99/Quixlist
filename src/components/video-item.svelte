@@ -7,7 +7,7 @@
 	export let selected;
 </script>
 
-<div class="wrapper" on:click={() => loadVideo(ind, url, domain)} class:selected>
+<div class="wrapper" on:click={loadVideo(ind)} class:selected>
 	<div class="index-wrapper">
 		<span id="index">{ind + 1}</span>
 	</div>
@@ -21,7 +21,6 @@
 
 <style>
 	.wrapper {
-		max-height: 10%;
 		padding: 5px 10px;
 		display: flex;
 		flex-direction: row;
@@ -39,9 +38,7 @@
 		font-weight: 700;
 		max-height: 3.5rem;
 		overflow: hidden;
-		display: block;
 		-webkit-line-clamp: 2;
-		display: box;
 		display: -webkit-box;
 		-webkit-box-orient: vertical;
 		text-overflow: ellipsis;

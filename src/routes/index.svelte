@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import Video from '../components/video.svelte';
 	import PlaylistColumn from '../components/playlist-column.svelte';
+	import InputSection from '../components/playlist-input.svelte';
 
 
 	type Video = {
@@ -12,45 +13,39 @@
 	};
 
 	let ind = 0;
+	let input: string = '';
 	let playlist_title;
 
 	let videos: Video[] = [];
 
+	$: input, populateVideos()
+
 
 	onMount(async function () {
-		videos = [{
-				url: "test.com",
-				src: 'Ra-Om7UMSJc',
-				title: 'Loading Title...',
-				domain: 'youtube'
-			},
-			{
-				url: "test.com",
-				src: '101653610',
-				title: 'Loading Title...',
-				domain: 'vimeo'
-			},
-			{
-				url: "test.com",
-				src: 'b7k0a5hYnSI',
-				title: 'Loading Title...',
-				domain: 'youtube'
-			},
-			{
-				url: "test.com",
-				src: '1TO48Cnl66w',
-				title: 'Loading Title...',
-				domain: 'youtube'
-			},
-			{
-				url: "test.com",
-				src: 'agrXgrAgQ0U',
-				title: 'Loading Title...',
-				domain: 'youtube'
-			}]
+		// For testing
+		input = 'https://www.youtube.com/watch?v=Ra-Om7UMSJc\nhttps://vimeo.com/101653610\nhttps://www.youtube.com/watch?v=b7k0a5hYnSI\nhttps://www.youtube.com/watch?v=1TO48Cnl66w\nhttps://www.youtube.com/watch?v=agrXgrAgQ0U';
 	});
 
-
+	const populateVideos = async () => {
+		if (input === '') return;
+		// Initial index is the first index of the new batch of videos
+		let initial_index = videos.length;
+		let urls = input.split('\n');
+		videos.length += urls.length;
+		for (let i = 0; i < urls.length; i++) {
+			let video_ind = i + initial_index;
+			let domain = urls[i].split('/')[2].replace('www.', '').split('.')[0];
+			videos[video_ind] = {
+				url: urls[i],
+				src: '',
+				title: 'Loading Title...',
+				domain
+			};
+		}
+		fetchVideoSrc(initial_index, videos[initial_index].url, videos[initial_index].domain);
+		fetchVideoTitles(initial_index);
+		input = '';
+	};
 
 	const loadVideo = async (index: number) => {
 		ind = index;
@@ -78,6 +73,17 @@
 		}
 	};
 
+	const fetchVideoTitles = async (initial_index) => {
+		for (let i = initial_index; i < videos.length; i++) {
+			if (videos[i].title !== 'Loading Title...') continue;
+			let url = encodeURIComponent(videos[i].url);
+			let endpoint = `/request/title/${url}.json`;
+			const res = await fetch(endpoint);
+			const data = await res.json();
+			videos[i].title = data.title;
+		}
+	};
+
 </script>
 
 <a href="/" style="text-decoration: none">
@@ -98,6 +104,11 @@
 			/>
 		</div>
 
+</div>
+<div class="input-area">
+	<div class="input-wrapper">
+		<InputSection bind:input />
+	</div>
 </div>
 
 <style>
@@ -126,6 +137,10 @@
 		border-radius: 15px;
 		background-color: #262021e0;
 		overflow: hidden;
+	}
+	.input-wrapper {
+		width: 50%;
+		float: left;
 	}
 
 	:global(body) {
