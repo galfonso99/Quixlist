@@ -2,9 +2,10 @@
 	import VideoItem from './video-item.svelte';
 	import { db } from '../Firebase';
 	import { ref, push, set, remove } from 'firebase/database';
+	import SavePlaylistDialog from './save-playlist-dialog.svelte';
 	import Fa from 'svelte-fa/src/fa.svelte';
 	import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons/faFloppyDisk';
-	import { goto } from '$app/navigation'
+	import { goto } from '$app/navigation';
 
 	export let items;
 	export let title = '';
@@ -13,14 +14,16 @@
 	export let loadVideo;
 	export let isSavedPlaylist: boolean = false;
 
-	const savePlaylist = () => {
-		isSavedPlaylist ? updateSavedPlaylist() : saveNewPlaylist();
-	};
+	let showDialog = false;
 
 	const handleSaveButton = async () => {
 		savePlaylist();
-		// await new Promise((r) => setTimeout(r, 2000));
-		goto("/playlist/"+id);
+		// goto('/playlist/' + id);
+	};
+
+	const savePlaylist = () => {
+		isSavedPlaylist ? updateSavedPlaylist() : saveNewPlaylist();
+		!isSavedPlaylist && openDialogWindow();
 	};
 
 	const updateSavedPlaylist = () => {
@@ -50,7 +53,9 @@
 		}
 	};
 
-	
+	const openDialogWindow = () => {
+		showDialog = true;
+	};
 
 	const createNewId = () => {
 		return Math.random()
@@ -63,18 +68,21 @@
 <div class="playlist-wrapper">
 	<div class="playlist-header">
 		<div class="header-top">
-			<input
-				id="playlist-title"
-				type="text"
-				placeholder="Enter Playlist Title..."
-				bind:value={title}
-			/>
+			{#if !isSavedPlaylist}
+				<input
+					id="playlist-title"
+					type="text"
+					placeholder="Enter Playlist Title..."
+					bind:value={title}
+				/>
+			{:else}
+				<h2 id="title">{title}</h2>
+			{/if}
 		</div>
 		<div class="save" on:click={handleSaveButton}>
 			<Fa icon={faFloppyDisk} />
-			<span style="padding-left: 10px">SAVE</span> 
+			<span style="padding-left: 10px">SAVE</span>
 		</div>
-		
 	</div>
 	{#each items as video, i}
 		<VideoItem
@@ -87,6 +95,8 @@
 		/>
 	{/each}
 </div>
+
+<SavePlaylistDialog bind:showDialog {id} />
 
 <style>
 	.playlist-wrapper {
@@ -105,6 +115,19 @@
 		border-top-right-radius: 15px;
 		border-top-left-radius: 15px;
 		padding-block: 10px;
+	}
+
+	#title {
+		font-size: 1.5em;
+		font-weight: bold;
+		margin-inline: 10px;
+		margin-block: 0px;
+		color: white;
+		width: inherit;
+		height: 1.5em;
+		overflow: hidden;
+		white-space: nowrap;
+		float: left;
 	}
 
 	input#playlist-title {
