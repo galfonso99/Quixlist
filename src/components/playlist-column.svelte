@@ -84,16 +84,18 @@
 			<span style="padding-left: 10px">SAVE</span>
 		</div>
 	</div>
-	{#each items as video, i}
-		<VideoItem
-			ind={i}
-			title={video?.title}
-			domain={video?.domain}
-			url={video?.url}
-			selected={i === ind}
-			{loadVideo}
-		/>
-	{/each}
+	<div class="items">
+		{#each items as video, i}
+			<VideoItem
+				ind={i}
+				title={video?.title}
+				domain={video?.domain}
+				url={video?.url}
+				selected={i === ind}
+				{loadVideo}
+			/>
+		{/each}
+	</div>
 </div>
 
 <SavePlaylistDialog bind:showDialog {id} />
@@ -101,10 +103,9 @@
 <style>
 	.playlist-wrapper {
 		position: relative;
+		height: calc(77vw * (9 / 16));
 		width: 22vw;
-		height: calc(75vw * (9 / 16));
 		border-radius: 15px;
-		overflow-y: hidden;
 		display: flex;
 		flex-direction: column;
 		background-color: #070707;
@@ -115,6 +116,10 @@
 		border-top-right-radius: 15px;
 		border-top-left-radius: 15px;
 		padding-block: 10px;
+	}
+
+	.items {
+		overflow-y: auto;
 	}
 
 	#title {

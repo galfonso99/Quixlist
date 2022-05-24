@@ -8,7 +8,7 @@
 
 		const playlistRef = ref(db, `playlists/${playlistId}/videos`);
 		const playlist = await get(playlistRef);
-		let iter = Object.values(playlist);
+		let iter = Object.values(playlist.val());
 		const video_urls = iter.map((video) => video['video_url']);
 		const video_titles = iter.map((video) => video['video_title']);
 		const titleRef = ref(db, `playlists/${playlistId}/title`);

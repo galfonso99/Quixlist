@@ -3,17 +3,17 @@
 	import Video from '../components/video.svelte';
 	import PlaylistColumn from '../components/playlist-column.svelte';
 	import InputSection from '../components/playlist-input.svelte';
-    
+
 	type Video = {
-        url: string;
+		url: string;
 		src: string;
 		title: string;
 		domain: string;
 	};
 
-    // Default value is false
-    export let isSavedPlaylist = false;
-    export let playlistProps: any = {};
+	// Default value is false
+	export let isSavedPlaylist = false;
+	export let playlistProps: any = {};
 
 	let { urls, titles, playlist_title, playlistId } = playlistProps;
 
@@ -22,12 +22,17 @@
 
 	let videos: Video[] = [];
 
-	$: input, populateVideos()
-
+	$: input, populateVideos();
 
 	onMount(async function () {
 		// For testing
-		input = 'https://www.youtube.com/watch?v=Ra-Om7UMSJc\nhttps://vimeo.com/101653610\nhttps://www.youtube.com/watch?v=b7k0a5hYnSI\nhttps://www.youtube.com/watch?v=1TO48Cnl66w\nhttps://www.youtube.com/watch?v=agrXgrAgQ0U';
+		// If saved playlist load from DB otherwise load manually
+		if (isSavedPlaylist) {
+			hydrateVideosFromDB();
+			document.title = playlist_title;
+		} else {
+			input = 'https://www.youtube.com/watch?v=Ra-Om7UMSJc\nhttps://vimeo.com/101653610\nhttps://www.youtube.com/watch?v=b7k0a5hYnSI\nhttps://www.youtube.com/watch?v=1TO48Cnl66w\nhttps://www.youtube.com/watch?v=agrXgrAgQ0U\nhttps://www.youtube.com/watch?v=1TO48Cnl66w\nhttps://www.youtube.com/watch?v=agrXgrAgQ0U\nhttps://www.youtube.com/watch?v=Ra-Om7UMSJc\nhttps://vimeo.com/101653610\nhttps://vimeo.com/101653610\nhttps://www.youtube.com/watch?v=b7k0a5hYnSI\nhttps://www.youtube.com/watch?v=1TO48Cnl66w';
+		}
 	});
 
 	const populateVideos = async () => {
@@ -51,11 +56,31 @@
 		input = '';
 	};
 
+	function hydrateVideosFromDB() {
+		videos.length = urls.length;
+		for (let i = 0; i < urls.length; i++) {
+			let domain = urls[i].split('/')[2].replace('www.', '').split('.')[0];
+			videos[i] = { url: urls[i], src: '', title: titles[i] || 'Unknown Title', domain };
+		}
+		fetchVideoSrc(0, videos[0].url, videos[0].domain);
+		fetchVideoTitles(0);
+		
+	}
+
 	const loadVideo = async (index: number) => {
 		ind = index;
 		// If the video_src has already been fetched break from function
 		if (!videos[index].src) {
 			fetchVideoSrc(index, videos[index].url, videos[index].domain);
+		}
+	};
+
+	const loadNextVideo = async () => {
+		if (ind + 1 >= videos.length) return;
+		ind += 1;
+		// If the video_src has already been fetched, skip
+		if (!videos[ind].src) {
+			fetchVideoSrc(ind, videos[ind].url, videos[ind].domain);
 		}
 	};
 
@@ -87,7 +112,6 @@
 			videos[i].title = data.title;
 		}
 	};
-
 </script>
 
 <a href="/" style="text-decoration: none">
@@ -96,20 +120,19 @@
 <div class="columns">
 	<div class="video-wrapper">
 		{#if videos[ind]?.src}
-		<Video video_src={videos[ind]?.src} domain={videos[ind]?.domain} />
+			<Video video_src={videos[ind]?.src} domain={videos[ind]?.domain} {loadNextVideo}/>
 		{/if}
 	</div>
-	<div class="playlist-column" >
+	<div class="playlist-column">
 		<PlaylistColumn
-				bind:items={videos}
-				title={playlist_title}
-				{ind}
-				id = {playlistId}
-				{isSavedPlaylist}
-				{loadVideo}
-			/>
-		</div>
-
+			bind:items={videos}
+			title={playlist_title}
+			id={playlistId}
+			{ind}
+			{isSavedPlaylist}
+			{loadVideo}
+		/>
+	</div>
 </div>
 <div class="input-area">
 	<div class="input-wrapper">
@@ -137,12 +160,14 @@
 	}
 	.video-wrapper {
 		width: 96%;
-		height: calc(75vw * (9 / 16));
+		height: calc(76vw * (9 / 16));
 		flex-direction: column;
 		margin: 0px 10px;
 		border-radius: 15px;
 		background-color: #262021e0;
 		overflow: hidden;
+	}
+	.playlist-column {
 	}
 	.input-wrapper {
 		width: 50%;

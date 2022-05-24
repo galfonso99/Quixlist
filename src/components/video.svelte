@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import PlayerCustomUi from './player-custom-ui.svelte';
 	export let video_src;
 	export let domain;
 	export let loadNextVideo: () => void = () => undefined;
@@ -30,7 +31,6 @@
 	{#key video_src}
 			<vm-player
 				autoplay
-				controls={domain === 'youtube'}
 				volume="100"
 				theme="dark"
 				bind:this={player}
@@ -39,11 +39,14 @@
 			>
 				{#if domain === 'youtube'}
 					<vm-youtube video-id={video_src} />
+					<PlayerCustomUi {loadNextVideo} {skipAhead} />
 				{:else if domain === 'vimeo'}
 					<vm-vimeo video-id={video_src} />
+					<PlayerCustomUi {loadNextVideo} {skipAhead} />
 				{:else}
 					<vm-video>
 						<source src={video_src} type="video/mp4" />
+						<PlayerCustomUi {loadNextVideo} {skipAhead} />
 					</vm-video>
 				{/if}
 			</vm-player>
