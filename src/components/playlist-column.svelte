@@ -12,6 +12,7 @@
 	export let ind;
 	export let id: string = undefined;
 	export let loadVideo;
+	export let deleteVideo;
 	export let isSavedPlaylist: boolean = false;
 
 	let showDialog = false;
@@ -92,6 +93,7 @@
 				url={video?.url}
 				selected={i === ind}
 				{loadVideo}
+				{deleteVideo}
 			/>
 		{/each}
 	</div>

@@ -1,9 +1,13 @@
 <script lang="ts">
+	import Fa from 'svelte-fa/src/fa.svelte';
+	import { faTrash } from '@fortawesome/free-solid-svg-icons/faTrash';
+
 	export let title;
 	export let domain;
 	export let url;
 	export let ind;
 	export let loadVideo;
+	export let deleteVideo;
 	export let selected;
 </script>
 
@@ -16,6 +20,15 @@
 		<a href={url} class="anchor">
 			<span id="origin">{domain}</span>
 		</a>
+	</div>
+	<div
+		class="delete-btn"
+		on:click={(e) => {
+			e.stopPropagation();
+			deleteVideo(ind);
+		}}
+	>
+		<Fa icon={faTrash} />
 	</div>
 </div>
 
@@ -72,6 +85,16 @@
 		/* width: 18vw; */
 		width: 100%;
 		margin: 0px 10px;
+	}
+
+	.delete-btn {
+		align-self: center;
+		justify-self: center;
+		margin-left: 10px;
+		width: 1.3rem;
+		height: 1.3rem;
+		font-size: 1em;
+		color: white;
 	}
 
 	.anchor {

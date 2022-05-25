@@ -120,6 +120,15 @@
 		}
 	};
 
+	const deleteVideo = async (index: number) => {
+		// Using videos.splice would directly change the state of the array
+		// And it will not trigger a re-render as a result
+		videos = videos.filter((video, i) => i !== index);
+		if (index < ind) {
+			ind -= 1;
+		}
+	};
+
 	const handleTheaterMode = () => {
 		// If running on the server then exit the routine
 		if (!browser) return;
@@ -156,6 +165,7 @@
 			{ind}
 			{isSavedPlaylist}
 			{loadVideo}
+			{deleteVideo}
 		/>
 	</div>
 </div>
