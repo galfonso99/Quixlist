@@ -1,6 +1,7 @@
 <script lang="ts">
 	export let loadNextVideo: () => void;
 	export let skipAhead: () => void;
+	export let handleTheaterMode: () => void;
 
 </script>
 
@@ -26,6 +27,7 @@
 				<vm-icon src="/Forward.svg" label="Forward" />
 				<vm-tooltip> Skip Ahead </vm-tooltip>
 			</vm-control>
+			
 			<vm-volume-control />
 			<vm-time-progress separator="/" />
 
@@ -33,7 +35,10 @@
 			<vm-pip-control />
 
 			<vm-settings-control />
-
+			<vm-control on:click={handleTheaterMode}>
+				<vm-icon src="/Theater.svg" label="TheaterMode" />
+				<vm-tooltip> Theater Mode </vm-tooltip>
+			</vm-control>
 			<vm-fullscreen-control />
 		</vm-control-group>
 	</vm-controls>

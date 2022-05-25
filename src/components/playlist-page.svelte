@@ -3,6 +3,8 @@
 	import Video from '../components/video.svelte';
 	import PlaylistColumn from '../components/playlist-column.svelte';
 	import InputSection from '../components/playlist-input.svelte';
+	import { browser } from '$app/env';
+
 
 	type Video = {
 		url: string;
@@ -21,8 +23,13 @@
 	let input: string = '';
 
 	let videos: Video[] = [];
-
+	let theaterMode = false;
+	let columns_element: HTMLElement;
+	let playlist_column_element: HTMLElement;
+	let input_area_element: HTMLElement;
 	$: input, populateVideos();
+
+	
 
 	onMount(async function () {
 		// For testing
@@ -112,18 +119,36 @@
 			videos[i].title = data.title;
 		}
 	};
+
+	const handleTheaterMode = () => {
+		// If running on the server then exit the routine
+		if (!browser) return;
+		if (!theaterMode) {
+			// Move playlist down to allow space for player
+			columns_element.removeChild(playlist_column_element);
+			input_area_element.appendChild(playlist_column_element);
+			theaterMode = true;
+		} else {
+			// Restore playlist to original position
+			input_area_element.removeChild(playlist_column_element);
+			columns_element.appendChild(playlist_column_element);
+			theaterMode = false;
+		}
+	};
 </script>
 
 <a href="/" style="text-decoration: none">
 	<span class="header"> QuixList </span>
 </a>
-<div class="columns">
-	<div class="video-wrapper">
+<div class="columns" bind:this={columns_element}>
+	<div class="video-wrapper" class:theater-height={theaterMode}>
 		{#if videos[ind]?.src}
-			<Video video_src={videos[ind]?.src} domain={videos[ind]?.domain} {loadNextVideo}/>
+			<Video video_src={videos[ind]?.src} domain={videos[ind]?.domain} {loadNextVideo}
+			{handleTheaterMode}/>
 		{/if}
 	</div>
-	<div class="playlist-column">
+	<div class="playlist-column" class:float-right={theaterMode}
+	bind:this={playlist_column_element}>
 		<PlaylistColumn
 			bind:items={videos}
 			title={playlist_title}
@@ -134,7 +159,7 @@
 		/>
 	</div>
 </div>
-<div class="input-area">
+<div class="input-area" bind:this={input_area_element}>
 	<div class="input-wrapper">
 		<InputSection bind:input />
 	</div>
@@ -159,7 +184,7 @@
 		height: 100%;
 	}
 	.video-wrapper {
-		width: 96%;
+		width: 90%;
 		height: calc(76vw * (9 / 16));
 		flex-direction: column;
 		margin: 0px 10px;
@@ -167,13 +192,21 @@
 		background-color: #262021e0;
 		overflow: hidden;
 	}
-	.playlist-column {
-	}
 	.input-wrapper {
 		width: 50%;
 		float: left;
 	}
-
+	.theater-height {
+		--offset: 10px;
+		--height-ratio: calc(90vw * (9 / 16));
+		height: calc(var(--height-ratio) - var(--offset));
+	}
+	.float-right {
+		float: right;
+		margin-top: 10px;
+		margin-right: 2%;
+	}
+	
 	:global(body) {
 		background-color: #f1b362;
 	}

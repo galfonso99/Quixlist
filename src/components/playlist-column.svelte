@@ -18,7 +18,6 @@
 
 	const handleSaveButton = async () => {
 		savePlaylist();
-		// goto('/playlist/' + id);
 	};
 
 	const savePlaylist = () => {

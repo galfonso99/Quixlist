@@ -4,6 +4,7 @@
 	export let video_src;
 	export let domain;
 	export let loadNextVideo: () => void = () => undefined;
+	export let handleTheaterMode = () => undefined;
 
 	let playerHasMounted = false;
 
@@ -39,14 +40,14 @@
 			>
 				{#if domain === 'youtube'}
 					<vm-youtube video-id={video_src} />
-					<PlayerCustomUi {loadNextVideo} {skipAhead} />
+					<PlayerCustomUi {loadNextVideo} {skipAhead} {handleTheaterMode}/>
 				{:else if domain === 'vimeo'}
 					<vm-vimeo video-id={video_src} />
-					<PlayerCustomUi {loadNextVideo} {skipAhead} />
+					<PlayerCustomUi {loadNextVideo} {skipAhead} {handleTheaterMode} />
 				{:else}
 					<vm-video>
 						<source src={video_src} type="video/mp4" />
-						<PlayerCustomUi {loadNextVideo} {skipAhead} />
+						<PlayerCustomUi {loadNextVideo} {skipAhead} {handleTheaterMode}/>
 					</vm-video>
 				{/if}
 			</vm-player>
