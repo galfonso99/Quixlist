@@ -3,6 +3,7 @@
 	import Video from '../components/video.svelte';
 	import PlaylistColumn from '../components/playlist-column.svelte';
 	import InputSection from '../components/playlist-input.svelte';
+	import { page } from '$app/stores';
 	import { browser } from '$app/env';
 
 
@@ -40,13 +41,20 @@
 		} else {
 			input = 'https://www.youtube.com/watch?v=Ra-Om7UMSJc\nhttps://vimeo.com/101653610\nhttps://www.youtube.com/watch?v=b7k0a5hYnSI\nhttps://www.youtube.com/watch?v=1TO48Cnl66w\nhttps://www.youtube.com/watch?v=agrXgrAgQ0U\nhttps://www.youtube.com/watch?v=1TO48Cnl66w\nhttps://www.youtube.com/watch?v=agrXgrAgQ0U\nhttps://www.youtube.com/watch?v=Ra-Om7UMSJc\nhttps://vimeo.com/101653610\nhttps://vimeo.com/101653610\nhttps://www.youtube.com/watch?v=b7k0a5hYnSI\nhttps://www.youtube.com/watch?v=1TO48Cnl66w';
 		}
+		let index_param = $page.url.searchParams.get('index');
+		let index = parseInt(index_param) || 0;
+		// Allow time for videos to be populated by populateVideos()
+		setTimeout(() => {
+			loadVideo(index);
+		}, 500);
+
 	});
 
 	const populateVideos = async () => {
 		if (input === '') return;
 		// Initial index is the first index of the new batch of videos
 		let initial_index = videos.length;
-		let urls = input.split('\n');
+		let urls = validateInput()
 		videos.length += urls.length;
 		for (let i = 0; i < urls.length; i++) {
 			let video_ind = i + initial_index;
@@ -76,6 +84,20 @@
 		
 	}
 
+	const validateInput = () => {
+		let urls = input.split('\n');
+		let urlRegex = /^http[s]?\:\/\/(\w*\.)?\w*\.\w*\/.*$/m;
+		for (let i = 0; i < urls.length; i++) {
+			urls[i] = urls[i].trim();
+			const isProperUrl = urlRegex.test(urls[i]);
+			if (!isProperUrl) {
+				urls.splice(i, 1);
+				i--;
+			}
+		}
+		return urls;
+	};
+
 	const loadVideo = async (index: number) => {
 		ind = index;
 		// If the video_src has already been fetched break from function
@@ -83,6 +105,7 @@
 			fetchVideoSrc(index, videos[index].url, videos[index].domain);
 		}
 		fetchNextTwoVideoSrcs(index);
+		updateQueryParams();
 	};
 
 	const loadNextVideo = async () => {
@@ -93,7 +116,9 @@
 			fetchVideoSrc(ind, videos[ind].url, videos[ind].domain);
 		}
 		fetchNextTwoVideoSrcs(ind);
+		updateQueryParams();
 	};
+
 
 	const fetchVideoSrc = async (index: number, url: string, domain: string) => {
 		switch (domain) {
@@ -131,6 +156,15 @@
 			videos[i].title = data.title;
 		}
 	};
+
+	const updateQueryParams = () => {
+		if (window.history.pushState) {
+			const newURL = new URL(window.location.href);
+			newURL.search = `?index=${ind}`;
+			window.history.pushState({ path: newURL.href }, '', newURL.href);
+		}
+	};
+
 
 	const deleteVideo = async (index: number) => {
 		// Using videos.splice would directly change the state of the array

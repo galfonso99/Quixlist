@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte'
 	import Fa from 'svelte-fa/src/fa.svelte';
 	import { faTrash } from '@fortawesome/free-solid-svg-icons/faTrash';
 
@@ -9,9 +10,26 @@
 	export let loadVideo;
 	export let deleteVideo;
 	export let selected;
+
+	let videoItem;
+
+
+	onMount(async function () {
+		// Stall for time so the actual videoIndex loads
+		// Then if videoIndex is out of view scroll it into view
+		await new Promise((r) => setTimeout(r, 1000));
+		scrollIntoView()
+		
+		
+	});
+	const scrollIntoView = async () => {
+		if (selected) {
+			videoItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+		}
+	}
 </script>
 
-<div class="wrapper" on:click={loadVideo(ind)} class:selected>
+<div class="wrapper" on:click={loadVideo(ind)} class:selected bind:this={videoItem}>
 	<div class="index-wrapper">
 		<span id="index">{ind + 1}</span>
 	</div>
