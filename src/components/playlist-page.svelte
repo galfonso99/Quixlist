@@ -59,6 +59,7 @@
 			};
 		}
 		fetchVideoSrc(initial_index, videos[initial_index].url, videos[initial_index].domain);
+		fetchNextTwoVideoSrcs(initial_index);
 		fetchVideoTitles(initial_index);
 		input = '';
 	};
@@ -70,6 +71,7 @@
 			videos[i] = { url: urls[i], src: '', title: titles[i] || 'Unknown Title', domain };
 		}
 		fetchVideoSrc(0, videos[0].url, videos[0].domain);
+		fetchNextTwoVideoSrcs(0);
 		fetchVideoTitles(0);
 		
 	}
@@ -80,6 +82,7 @@
 		if (!videos[index].src) {
 			fetchVideoSrc(index, videos[index].url, videos[index].domain);
 		}
+		fetchNextTwoVideoSrcs(index);
 	};
 
 	const loadNextVideo = async () => {
@@ -89,6 +92,7 @@
 		if (!videos[ind].src) {
 			fetchVideoSrc(ind, videos[ind].url, videos[ind].domain);
 		}
+		fetchNextTwoVideoSrcs(ind);
 	};
 
 	const fetchVideoSrc = async (index: number, url: string, domain: string) => {
@@ -105,6 +109,14 @@
 			}
 			default: {
 				// Add a way to fetch video src from video tags (not iframes)
+			}
+		}
+	};
+
+	const fetchNextTwoVideoSrcs = async (index: number) => {
+		for (let i = 1; i < 3; i++) {
+			if (index + i < videos.length && !videos[index + i].src) {
+				fetchVideoSrc(index + i, videos[index + i].url, videos[index + i].domain);
 			}
 		}
 	};
