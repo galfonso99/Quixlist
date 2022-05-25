@@ -37,6 +37,7 @@
 		"@vime/core": "^5.3.1",
 		"@vime/svelte": "^5.3.1",
 		"firebase": "^9.8.1",
+		"svelte-dnd-action": "^0.9.18",
 		"svelte-fa": "^2.4.0"
 	}
 }

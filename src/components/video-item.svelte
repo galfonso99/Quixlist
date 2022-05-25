@@ -1,37 +1,40 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
+	import { onMount } from 'svelte';
 	import Fa from 'svelte-fa/src/fa.svelte';
 	import { faTrash } from '@fortawesome/free-solid-svg-icons/faTrash';
+	import { faGripLines } from '@fortawesome/free-solid-svg-icons/faGripLines';
 
 	export let title;
 	export let domain;
 	export let url;
-	export let ind;
 	export let loadVideo;
 	export let deleteVideo;
+	export let ind;
 	export let selected;
+	export let scroll;
 
 	let videoItem;
-
 
 	onMount(async function () {
 		// Stall for time so the actual videoIndex loads
 		// Then if videoIndex is out of view scroll it into view
 		await new Promise((r) => setTimeout(r, 1000));
-		scrollIntoView()
-		
-		
+		scrollIntoView();
+		scroll = false
 	});
 	const scrollIntoView = async () => {
-		if (selected) {
+		if (selected && scroll) {
 			videoItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
 		}
-	}
+	};
 </script>
 
-<div class="wrapper" on:click={loadVideo(ind)} class:selected bind:this={videoItem}>
+<div class="wrapper video-item" on:click={loadVideo(ind)} class:selected bind:this={videoItem}>
 	<div class="index-wrapper">
 		<span id="index">{ind + 1}</span>
+		<div class="drag-icon hidden">
+			<Fa icon={faGripLines} />
+		</div>
 	</div>
 	<div class="video-info">
 		<span id="title" {title}>{title}</span>
@@ -58,6 +61,14 @@
 		justify-content: start;
 		align-content: center;
 		cursor: pointer;
+	}
+
+	.wrapper:hover .drag-icon {
+		display: block;
+	}
+
+	.wrapper:hover #index {
+		display: none;
 	}
 	span#title {
 		/* font-size: 1.4rem; */
@@ -88,7 +99,11 @@
 		color: white;
 	}
 
-    .selected {
+	.hidden {
+		display: none;
+	}
+
+	.selected {
 		background-color: #515151d2;
 	}
 
@@ -96,7 +111,9 @@
 		/* align-self: center; */
 		display: flex;
 		align-items: center;
-		margin: 0px 3px;
+		align-content: center;
+		/* margin: 0px 3px; */
+		min-width: 12px;
 	}
 
 	.video-info {
@@ -113,6 +130,13 @@
 		height: 1.3rem;
 		font-size: 1em;
 		color: white;
+	}
+
+	.drag-icon {
+		color: white;
+		width: 0.8rem;
+		height: 0.8rem;
+		font-size: 1em;
 	}
 
 	.anchor {

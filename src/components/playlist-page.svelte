@@ -8,6 +8,7 @@
 
 
 	type Video = {
+		id: number;
 		url: string;
 		src: string;
 		title: string;
@@ -60,6 +61,7 @@
 			let video_ind = i + initial_index;
 			let domain = urls[i].split('/')[2].replace('www.', '').split('.')[0];
 			videos[video_ind] = {
+				id: video_ind,
 				url: urls[i],
 				src: '',
 				title: 'Loading Title...',
@@ -76,7 +78,7 @@
 		videos.length = urls.length;
 		for (let i = 0; i < urls.length; i++) {
 			let domain = urls[i].split('/')[2].replace('www.', '').split('.')[0];
-			videos[i] = { url: urls[i], src: '', title: titles[i] || 'Unknown Title', domain };
+			videos[i] = { id: i, url: urls[i], src: '', title: titles[i] || 'Unknown Title', domain };
 		}
 		fetchVideoSrc(0, videos[0].url, videos[0].domain);
 		fetchNextTwoVideoSrcs(0);

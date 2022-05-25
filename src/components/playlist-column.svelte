@@ -7,6 +7,9 @@
 	import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons/faFloppyDisk';
 	import { goto } from '$app/navigation';
 
+	import { dndzone } from 'svelte-dnd-action';
+	import { flip } from 'svelte/animate';
+
 	export let items;
 	export let title = '';
 	export let ind;
@@ -16,6 +19,9 @@
 	export let isSavedPlaylist: boolean = false;
 
 	let showDialog = false;
+	let prevId;
+	let scroll = true;
+	const flipDurationMs = 200;
 
 	const handleSaveButton = async () => {
 		savePlaylist();
@@ -53,16 +59,29 @@
 		}
 	};
 
-	const openDialogWindow = () => {
-		showDialog = true;
-	};
-
 	const createNewId = () => {
 		return Math.random()
 			.toString(36)
 			.replace(/[a-z0-9]/, '')
 			.substring(1, 9);
 	};
+
+	const openDialogWindow = () => {
+		showDialog = true;
+	};
+
+	function handleSort(e: CustomEvent<DndEvent>) {
+		prevId = items[ind]?.id;
+		items = e.detail.items;
+	}
+
+	/* This function not only updates the items array after a swap happens, but it also updates the current index of the playlists
+	so that the video that was playing is the same after the swap */
+	function handleSortFinalize(e: CustomEvent<DndEvent>) {
+		items = e.detail.items;
+		let newInd = items.findIndex((vid) => vid.id === prevId);
+		ind = newInd;
+	}
 </script>
 
 <div class="playlist-wrapper">
@@ -84,19 +103,31 @@
 			<span style="padding-left: 10px">SAVE</span>
 		</div>
 	</div>
-	<div class="items">
-		{#each items as video, i}
-			<VideoItem
-				ind={i}
-				title={video?.title}
-				domain={video?.domain}
-				url={video?.url}
-				selected={i === ind}
-				{loadVideo}
-				{deleteVideo}
-			/>
+	<section
+		use:dndzone={{ items, flipDurationMs }}
+		class="items drag-n-drop"
+		on:consider={handleSort}
+		on:finalize={handleSortFinalize}
+	>
+		{#each items as video (video.id)}
+			<div
+				animate:flip={{ duration: flipDurationMs }}
+				class="video-card video-item-wrapper"
+				class:selected={ind === items.indexOf(video)}
+			>
+				<VideoItem
+					ind={items.indexOf(video)}
+					title={video?.title}
+					domain={video?.domain}
+					url={video?.url}
+					selected={ind === items.indexOf(video)}
+					bind:scroll
+					{loadVideo}
+					{deleteVideo}
+				/>
+			</div>
 		{/each}
-	</div>
+	</section>
 </div>
 
 <SavePlaylistDialog bind:showDialog {id} />
@@ -117,6 +148,11 @@
 		border-top-right-radius: 15px;
 		border-top-left-radius: 15px;
 		padding-block: 10px;
+	}
+	.drag-n-drop {
+		overflow-y: scroll;
+		overflow-x: hidden;
+		outline: none !important;
 	}
 
 	.items {
@@ -170,5 +206,9 @@
 		display: flex;
 		font-family: 'Roboto', 'Arial', sans-serif;
 		align-items: center;
+	}
+
+	.hidden {
+		display: none;
 	}
 </style>
