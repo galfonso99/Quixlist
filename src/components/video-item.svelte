@@ -114,6 +114,7 @@
 		align-content: center;
 		/* margin: 0px 3px; */
 		min-width: 12px;
+		width: 12px;
 	}
 
 	.video-info {
@@ -134,9 +135,7 @@
 
 	.drag-icon {
 		color: white;
-		width: 0.8rem;
-		height: 0.8rem;
-		font-size: 1em;
+		font-size: 0.8em;
 	}
 
 	.anchor {

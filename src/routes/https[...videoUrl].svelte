@@ -47,7 +47,11 @@
 				break;
 			}
 			default: {
-                
+                url = encodeURIComponent(url);
+				let endpoint = `https://puppeteer-fetch-video.vercel.app/api/fetch?page=${url}`;
+				const res = await fetch(endpoint);
+				const data = await res.json();
+				video.src = data.src;
 			}
 		}
 	};

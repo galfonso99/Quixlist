@@ -6,7 +6,6 @@
 	import { page } from '$app/stores';
 	import { browser } from '$app/env';
 
-
 	type Video = {
 		id: number;
 		url: string;
@@ -31,8 +30,6 @@
 	let input_area_element: HTMLElement;
 	$: input, populateVideos();
 
-	
-
 	onMount(async function () {
 		// For testing
 		// If saved playlist load from DB otherwise load manually
@@ -40,7 +37,8 @@
 			hydrateVideosFromDB();
 			document.title = playlist_title;
 		} else {
-			input = 'https://www.youtube.com/watch?v=Ra-Om7UMSJc\nhttps://vimeo.com/101653610\nhttps://www.youtube.com/watch?v=b7k0a5hYnSI\nhttps://www.youtube.com/watch?v=1TO48Cnl66w\nhttps://www.youtube.com/watch?v=agrXgrAgQ0U\nhttps://www.youtube.com/watch?v=1TO48Cnl66w\nhttps://www.youtube.com/watch?v=agrXgrAgQ0U\nhttps://www.youtube.com/watch?v=Ra-Om7UMSJc\nhttps://vimeo.com/101653610\nhttps://vimeo.com/101653610\nhttps://www.youtube.com/watch?v=b7k0a5hYnSI\nhttps://www.youtube.com/watch?v=1TO48Cnl66w';
+			input =
+				'https://www.youtube.com/watch?v=Ra-Om7UMSJc\nhttps://vimeo.com/101653610\nhttps://www.youtube.com/watch?v=b7k0a5hYnSI\nhttps://www.youtube.com/watch?v=1TO48Cnl66w\nhttps://www.youtube.com/watch?v=agrXgrAgQ0U\nhttps://www.youtube.com/watch?v=1TO48Cnl66w\nhttps://www.youtube.com/watch?v=agrXgrAgQ0U\nhttps://www.youtube.com/watch?v=Ra-Om7UMSJc\nhttps://vimeo.com/101653610\nhttps://vimeo.com/101653610\nhttps://www.youtube.com/watch?v=b7k0a5hYnSI\nhttps://www.youtube.com/watch?v=1TO48Cnl66w';
 		}
 		let index_param = $page.url.searchParams.get('index');
 		let index = parseInt(index_param) || 0;
@@ -48,14 +46,13 @@
 		setTimeout(() => {
 			loadVideo(index);
 		}, 500);
-
 	});
 
 	const populateVideos = async () => {
 		if (input === '') return;
 		// Initial index is the first index of the new batch of videos
 		let initial_index = videos.length;
-		let urls = validateInput()
+		let urls = validateInput();
 		videos.length += urls.length;
 		for (let i = 0; i < urls.length; i++) {
 			let video_ind = i + initial_index;
@@ -83,7 +80,6 @@
 		fetchVideoSrc(0, videos[0].url, videos[0].domain);
 		fetchNextTwoVideoSrcs(0);
 		fetchVideoTitles(0);
-		
 	}
 
 	const validateInput = () => {
@@ -121,7 +117,6 @@
 		updateQueryParams();
 	};
 
-
 	const fetchVideoSrc = async (index: number, url: string, domain: string) => {
 		switch (domain) {
 			case 'youtube': {
@@ -135,7 +130,11 @@
 				break;
 			}
 			default: {
-				// Add a way to fetch video src from video tags (not iframes)
+				url = encodeURIComponent(url);
+				let endpoint = `https://puppeteer-fetch-video.vercel.app/api/fetch?page=${url}`;
+				const res = await fetch(endpoint);
+				const data = await res.json();
+				videos[index].src = data.src;
 			}
 		}
 	};
@@ -166,7 +165,6 @@
 			window.history.pushState({ path: newURL.href }, '', newURL.href);
 		}
 	};
-
 
 	const deleteVideo = async (index: number) => {
 		// Using videos.splice would directly change the state of the array
@@ -200,12 +198,15 @@
 <div class="columns" bind:this={columns_element}>
 	<div class="video-wrapper" class:theater-height={theaterMode}>
 		{#if videos[ind]?.src}
-			<Video video_src={videos[ind]?.src} domain={videos[ind]?.domain} {loadNextVideo}
-			{handleTheaterMode}/>
+			<Video
+				video_src={videos[ind]?.src}
+				domain={videos[ind]?.domain}
+				{loadNextVideo}
+				{handleTheaterMode}
+			/>
 		{/if}
 	</div>
-	<div class="playlist-column" class:float-right={theaterMode}
-	bind:this={playlist_column_element}>
+	<div class="playlist-column" class:float-right={theaterMode} bind:this={playlist_column_element}>
 		<PlaylistColumn
 			bind:items={videos}
 			title={playlist_title}
@@ -264,7 +265,7 @@
 		margin-top: 10px;
 		margin-right: 2%;
 	}
-	
+
 	:global(body) {
 		background-color: #f1b362;
 	}

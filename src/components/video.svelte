@@ -34,6 +34,7 @@
 				autoplay
 				volume="100"
 				theme="dark"
+				controls={domain !== "youtube" && domain !== "vimeo"}
 				bind:this={player}
 				on:vmPlaybackEnded={loadNextVideo}
 				on:vmPlaybackReady={autoplay}
