@@ -34,7 +34,7 @@
 				autoplay
 				volume="100"
 				theme="dark"
-				controls={domain !== "youtube" && domain !== "vimeo"}
+				controls={domain !== "youtube" && domain !== "vimeo" && domain !== "dailymotion"}
 				bind:this={player}
 				on:vmPlaybackEnded={loadNextVideo}
 				on:vmPlaybackReady={autoplay}
@@ -44,6 +44,9 @@
 					<PlayerCustomUi {loadNextVideo} {skipAhead} {handleTheaterMode}/>
 				{:else if domain === 'vimeo'}
 					<vm-vimeo video-id={video_src} />
+					<PlayerCustomUi {loadNextVideo} {skipAhead} {handleTheaterMode} />
+				{:else if domain === 'dailymotion'}
+					<vm-dailymotion video-id={video_src} />
 					<PlayerCustomUi {loadNextVideo} {skipAhead} {handleTheaterMode} />
 				{:else}
 					<vm-video>

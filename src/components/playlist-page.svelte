@@ -129,6 +129,11 @@
 				videos[index].src = video_id;
 				break;
 			}
+			case 'dailymotion': {
+				let video_id = url.split('/')[4];
+				videos[index].src = video_id;
+				break;
+			}
 			default: {
 				url = encodeURIComponent(url);
 				let endpoint = `https://puppeteer-fetch-video.vercel.app/api/fetch?page=${url}`;
