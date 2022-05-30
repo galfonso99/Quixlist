@@ -35,9 +35,6 @@
 		if (isSavedPlaylist) {
 			hydrateVideosFromDB();
 			document.title = playlist_title;
-		} else {
-			input =
-				'https://www.youtube.com/watch?v=Ra-Om7UMSJc\nhttps://vimeo.com/101653610\nhttps://www.youtube.com/watch?v=b7k0a5hYnSI\nhttps://www.youtube.com/watch?v=1TO48Cnl66w\nhttps://www.youtube.com/watch?v=agrXgrAgQ0U\nhttps://www.youtube.com/watch?v=1TO48Cnl66w\nhttps://www.youtube.com/watch?v=agrXgrAgQ0U\nhttps://www.youtube.com/watch?v=Ra-Om7UMSJc\nhttps://vimeo.com/101653610\nhttps://vimeo.com/101653610\nhttps://www.youtube.com/watch?v=b7k0a5hYnSI\nhttps://www.youtube.com/watch?v=1TO48Cnl66w';
 		}
 		let index_param = $page.url.searchParams.get('index');
 		let index = parseInt(index_param) || 0;
