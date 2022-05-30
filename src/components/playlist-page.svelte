@@ -31,8 +31,7 @@
 	$: input, populateVideos();
 
 	onMount(async function () {
-		// For testing
-		// If saved playlist load from DB otherwise load manually
+		// If playlist is a stored playlist load from DB otherwise load manually
 		if (isSavedPlaylist) {
 			hydrateVideosFromDB();
 			document.title = playlist_title;
@@ -43,9 +42,8 @@
 		let index_param = $page.url.searchParams.get('index');
 		let index = parseInt(index_param) || 0;
 		// Allow time for videos to be populated by populateVideos()
-		setTimeout(() => {
-			loadVideo(index);
-		}, 500);
+		await new Promise((r) => setTimeout(r, 500));
+		loadVideo(index);
 	});
 
 	const populateVideos = async () => {
@@ -206,6 +204,7 @@
 			<Video
 				video_src={videos[ind]?.src}
 				domain={videos[ind]?.domain}
+				{ind}
 				{loadNextVideo}
 				{handleTheaterMode}
 			/>

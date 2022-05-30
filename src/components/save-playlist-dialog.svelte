@@ -2,7 +2,6 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 
-	// let dialog: any;
 	export let showDialog;
 	export let id;
 

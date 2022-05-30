@@ -1,14 +1,10 @@
 <script lang="ts">
-	import VideoItem from './video-item.svelte';
+	import DragNDrop from './drag-n-drop.svelte';
 	import { db } from '../Firebase';
 	import { ref, push, set, remove } from 'firebase/database';
 	import SavePlaylistDialog from './save-playlist-dialog.svelte';
 	import Fa from 'svelte-fa/src/fa.svelte';
 	import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons/faFloppyDisk';
-	import { goto } from '$app/navigation';
-
-	import { dndzone } from 'svelte-dnd-action';
-	import { flip } from 'svelte/animate';
 
 	export let items;
 	export let title = '';
@@ -19,9 +15,7 @@
 	export let isSavedPlaylist: boolean = false;
 
 	let showDialog = false;
-	let prevId;
 	let scroll = true;
-	const flipDurationMs = 200;
 
 	const handleSaveButton = async () => {
 		savePlaylist();
@@ -46,7 +40,8 @@
 	};
 
 	const saveNewPlaylist = () => {
-		id = createNewId(); // Creates a random id
+		// Create a random id
+		id = createNewId(); 
 		const playlistRef = ref(db, 'playlists/' + id);
 		const playlistUrlsRef = ref(db, 'playlists/' + id + '/videos');
 		set(playlistRef, { title });
@@ -69,19 +64,6 @@
 	const openDialogWindow = () => {
 		showDialog = true;
 	};
-
-	function handleSort(e: CustomEvent<DndEvent>) {
-		prevId = items[ind]?.id;
-		items = e.detail.items;
-	}
-
-	/* This function not only updates the items array after a swap happens, but it also updates the current index of the playlists
-	so that the video that was playing is the same after the swap */
-	function handleSortFinalize(e: CustomEvent<DndEvent>) {
-		items = e.detail.items;
-		let newInd = items.findIndex((vid) => vid.id === prevId);
-		ind = newInd;
-	}
 </script>
 
 <div class="playlist-wrapper">
@@ -103,31 +85,8 @@
 			<span style="padding-left: 10px">SAVE</span>
 		</div>
 	</div>
-	<section
-		use:dndzone={{ items, flipDurationMs }}
-		class="items drag-n-drop"
-		on:consider={handleSort}
-		on:finalize={handleSortFinalize}
-	>
-		{#each items as video (video.id)}
-			<div
-				animate:flip={{ duration: flipDurationMs }}
-				class="video-card video-item-wrapper"
-				class:selected={ind === items.indexOf(video)}
-			>
-				<VideoItem
-					ind={items.indexOf(video)}
-					title={video?.title}
-					domain={video?.domain}
-					url={video?.url}
-					selected={ind === items.indexOf(video)}
-					bind:scroll
-					{loadVideo}
-					{deleteVideo}
-				/>
-			</div>
-		{/each}
-	</section>
+
+	<DragNDrop bind:items bind:ind bind:scroll {loadVideo} {deleteVideo} />
 </div>
 
 <SavePlaylistDialog bind:showDialog {id} />
@@ -135,7 +94,7 @@
 <style>
 	.playlist-wrapper {
 		position: relative;
-		height: calc(77vw * (9 / 16));
+		height: calc(76vw * (9 / 16));
 		width: 22vw;
 		border-radius: 15px;
 		display: flex;
@@ -148,15 +107,6 @@
 		border-top-right-radius: 15px;
 		border-top-left-radius: 15px;
 		padding-block: 10px;
-	}
-	.drag-n-drop {
-		overflow-y: scroll;
-		overflow-x: hidden;
-		outline: none !important;
-	}
-
-	.items {
-		overflow-y: auto;
 	}
 
 	#title {
@@ -208,7 +158,4 @@
 		align-items: center;
 	}
 
-	.hidden {
-		display: none;
-	}
 </style>

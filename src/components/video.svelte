@@ -3,6 +3,7 @@
 	import PlayerCustomUi from './player-custom-ui.svelte';
 	export let video_src;
 	export let domain;
+	export let ind = 0;
 	export let loadNextVideo: () => void = () => undefined;
 	export let handleTheaterMode = () => undefined;
 
@@ -29,7 +30,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@vime/core@^5/themes/default.css" />
 
 {#if playerHasMounted && domain}
-	{#key video_src}
+	{#key ind}
 			<vm-player
 				autoplay
 				volume="100"

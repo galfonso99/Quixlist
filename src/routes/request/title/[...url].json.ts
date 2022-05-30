@@ -1,8 +1,8 @@
 /* eslint-disable prefer-const */
 
 /** @type {import('@sveltejs/kit').RequestHandler} */
-export async function get({ params }) {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export async function get({ params }): Promise<{ body: { title: string; }; }> {
   let { url } = params;
 	url = decodeURIComponent(url);
 
