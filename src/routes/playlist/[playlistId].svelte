@@ -3,7 +3,7 @@
 	import { ref, get } from "firebase/database";
 
 	/** @type {import('@sveltejs/kit').Load} */
-	export async function load({ params, fetch }) {
+	export async function load({ params }) {
 		const { playlistId } = params;
 
 		const playlistRef = ref(db, `playlists/${playlistId}/videos`);
