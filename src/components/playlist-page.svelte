@@ -244,7 +244,7 @@
 		height: 100%;
 	}
 	.video-wrapper {
-		width: 90%;
+		width: 96%;
 		height: calc(76vw * (9 / 16));
 		flex-direction: column;
 		margin: 0px 10px;
@@ -258,7 +258,7 @@
 	}
 	.theater-height {
 		--offset: 10px;
-		--height-ratio: calc(90vw * (9 / 16));
+		--height-ratio: calc(96vw * (9 / 16));
 		height: calc(var(--height-ratio) - var(--offset));
 	}
 	.float-right {
