@@ -8,11 +8,11 @@
 
 	export let items;
 	export let title = '';
-	export let ind;
-	export let id: string = undefined;
+	export let ind: number;
+	export let id = '';
 	export let loadVideo;
 	export let deleteVideo;
-	export let isSavedPlaylist: boolean = false;
+	export let isSavedPlaylist = false;
 
 	let showDialog = false;
 	let scroll = true;
